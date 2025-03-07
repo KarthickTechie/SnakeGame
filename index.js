@@ -1,3 +1,12 @@
+/*
+
+    index.js this is a core logic script 
+    handles player positioning and actions like transit by keyboard event etc
+
+*/
+
+// Matrix data struture to lay the playground
+
 const ground = [
     [1,2,3,4,5],
     [6,7,8,9,10],
@@ -40,6 +49,11 @@ for(let i=0;i<ground.length;i++){
     }
 }
 
+/* 
+ gameInit function initiate the game and call multiple functions 
+ 
+*/
+
 function gameInit(){
     
 
@@ -48,6 +62,10 @@ function gameInit(){
 
 }
 
+/* 
+    this functio nset the positon of prey and predator passing the position coordinates x , y and type of 
+    player
+*/
 function setPosition(x,y,player){
 
     if(player == 'prey'){
