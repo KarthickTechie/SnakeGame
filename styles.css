@@ -15,3 +15,12 @@
     height: 20px;
     font-size: smaller;
 }
+
+.prey-style{
+    background-color: green;
+
+}
+
+.predator-style{
+    background-color: red;
+}
