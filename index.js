@@ -150,3 +150,10 @@ function resetCell(x,y,player){
     }
 }
 
+/*
+keypress handler function
+*/
+
+function onKeyPress(){
+
+}
