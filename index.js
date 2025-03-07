@@ -25,13 +25,20 @@ y- position of y
 */
 let prey = {}  
 
+
+/* 
+Object datastructure to keep all the possible configuratio of the game
+*/
+
 const gameConfig = {
     predatorInitialPosition : {x:3,y:0},
     preyInitialPosition : {x:3,y:4},
     predatorColor:'red',
     preyColor:'green',
-
+    autoPredatorMovement : true
 }
+
+
 
 const playground = document.getElementById('playground')
 
@@ -69,15 +76,77 @@ function gameInit(){
 function setPosition(x,y,player){
 
     if(player == 'prey'){
-        const el = document.getElementById(`cell${ground[x][y]}`)
+        const el = queryCell(x,y)
         el.style.backgroundColor=gameConfig.preyColor
         prey = {x , y , el }
         
     }else{
-        const el = document.getElementById(`cell${ground[x][y]}`)
+        const el = queryCell(x,y)
         predator.push({x,y,el})
         predator.forEach(c=>{
             c.el.style.backgroundColor='red'
         })
+        setMovement()
+
     }
 }
+
+/*
+
+function handles movement of the predator head
+
+*/
+function setMovement(){
+    const {x,y,el} = predator[0]
+    let headCurrentPosition = y
+    
+    if(gameConfig.autoPredatorMovement){
+        // logic that enables  auto transition of predator head
+        do{
+            autoTransition(x,headCurrentPosition)
+            headCurrentPosition++
+
+           // test(x,headCurrentPosition)
+        }
+        // predator head transit through ground column's while head.y < ground[x].length
+        // if head.y reaches ground[x].length then reset head.y to 0
+        while(headCurrentPosition < ground[x].length)
+            
+
+    }else{
+        // transition of predator head reactive to keyboard event
+
+    }
+}
+
+
+// function  that handles auto transition 
+
+function autoTransition(_x,_y){
+
+    setTimeout(()=>{
+        const prevCell = _y > 0 ? _y-1 : 0
+        resetCell(_x,prevCell,'predator')
+        queryCell(_x,_y).style.backgroundColor='red'
+        if(_y >= ground[_x].length-1){
+            console.log('reaches end',ground[_x].length,_y)
+            setMovement()
+        }
+    },_y*1000)
+   
+   
+    
+  }
+
+function queryCell(x,y){
+    return document.getElementById(`cell${ground[x][y]}`)
+}
+
+function resetCell(x,y,player){
+    if(player == 'predator'){
+       queryCell(x,y).style.backgroundColor='white'
+    }else{
+
+    }
+}
+
