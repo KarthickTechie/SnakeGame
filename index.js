@@ -14,6 +14,11 @@ const ground = [
     [16,17,18,19,20],
     [21,22,23,24,25]
 ] 
+const totalCol = ground[0].length
+const totRow = ground.length
+document.addEventListener('keydown',(e)=>{
+    onKeyPress(e.key)
+})
 
 /* track the predator , predator.length will return predator size */
 const predator = [] 
@@ -35,12 +40,14 @@ const gameConfig = {
     preyInitialPosition : {x:3,y:4},
     predatorColor:'red',
     preyColor:'green',
-    autoPredatorMovement : true
+    autoPredatorMovement : false
 }
 
 
 
 const playground = document.getElementById('playground')
+
+
 
 for(let i=0;i<ground.length;i++){
     for(let j=0;j<ground[i].length;j++){
@@ -115,7 +122,8 @@ function setMovement(){
 
     }else{
         // transition of predator head reactive to keyboard event
-
+        resetCell(x,y,'predator')
+        queryCell(x,y).style.backgroundColor='red'
     }
 }
 
@@ -125,8 +133,7 @@ function setMovement(){
 function autoTransition(_x,_y){
 
     setTimeout(()=>{
-        const prevCell = _y > 0 ? _y-1 : 0
-        resetCell(_x,prevCell,'predator')
+        resetCell(_x,_y,'predator')
         queryCell(_x,_y).style.backgroundColor='red'
         if(_y >= ground[_x].length-1){
             console.log('reaches end',ground[_x].length,_y)
@@ -138,13 +145,16 @@ function autoTransition(_x,_y){
     
   }
 
+
 function queryCell(x,y){
     return document.getElementById(`cell${ground[x][y]}`)
 }
 
 function resetCell(x,y,player){
+    
     if(player == 'predator'){
-       queryCell(x,y).style.backgroundColor='white'
+        const prevCell = (y == 1 || y == 0) ? y : y
+       queryCell(x,prevCell).style.backgroundColor='white'
     }else{
 
     }
@@ -154,6 +164,45 @@ function resetCell(x,y,player){
 keypress handler function
 */
 
-function onKeyPress(){
+function onKeyPress(key){
+    switch(key){
+        case 'ArrowUp':
+
+        break;
+
+        case 'ArrowDown':
+        break;
+
+        case 'ArrowLeft':
+           
+        break;
+
+        case 'ArrowRight':
+            console.log(key)
+            moveRight()
+        break;
+    }
+
+
+}
+
+/*
+handler function for moving the predator to Right 
+set the predator array object  
+*/
+
+function moveRight(){
+    const {x,y,el} = predator[0]
+    console.log(y,totalCol)
+    if(y<totalCol-1){
+    resetCell(x,y,'predator')
+    const newEl = queryCell(x,y+1)
+    newEl.style.backgroundColor='red'
+        predator[0] = {x,y:y+1,el:newEl}
+    }else if(y==totalCol-1){
+        const newEl = queryCell(x,0)
+        predator[0] = {x,y:0,el:newEl}
+    }
+    console.log(predator[0])
 
 }
