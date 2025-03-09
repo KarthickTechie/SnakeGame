@@ -153,11 +153,19 @@ function queryCell(x,y){
 function resetCell(x,y,player){
     
     if(player == 'predator'){
-        const prevCell = (y == 1 || y == 0) ? y : y
+        const prevCell = (y == 1 || y == 0 ) ? y : y
+        console.log(`resetting cell ${x},${prevCell}`)
        queryCell(x,prevCell).style.backgroundColor='white'
     }else{
 
     }
+}
+
+function paintCell(x,y){
+    
+    const newEl = queryCell(x,y)
+    newEl.style.backgroundColor='red'
+    predator[0] = {x,y,el:newEl}
 }
 
 /*
@@ -187,22 +195,18 @@ function onKeyPress(key){
 }
 
 /*
-handler function for moving the predator to Right 
+handler function for moving the predator head to Right 
 set the predator array object  
 */
 
 function moveRight(){
     const {x,y,el} = predator[0]
     console.log(y,totalCol)
-    if(y<totalCol-1){
-    resetCell(x,y,'predator')
-    const newEl = queryCell(x,y+1)
-    newEl.style.backgroundColor='red'
-        predator[0] = {x,y:y+1,el:newEl}
+    if(y<totalCol-1 ){
+        resetCell(x,y,'predator')
+       paintCell(x,y+1)
     }else if(y==totalCol-1){
-        const newEl = queryCell(x,0)
-        predator[0] = {x,y:0,el:newEl}
+        paintCell(x,0)
     }
-    console.log(predator[0])
 
 }
