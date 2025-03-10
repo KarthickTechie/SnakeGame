@@ -35,7 +35,10 @@ let prey = {};
 /* 
 Object datastructure to keep all the possible configuratio of the game
 */
-
+const APP_CONSTANTS = {
+  predator: "predator",
+  prey: "prey",
+};
 const gameConfig = {
   predatorInitialPosition: { x: 3, y: 0 },
   preyInitialPosition: { x: 3, y: 4 },
@@ -69,12 +72,12 @@ function gameInit() {
   setPosition(
     gameConfig.preyInitialPosition.x,
     gameConfig.preyInitialPosition.y,
-    "prey"
+    APP_CONSTANTS.prey
   );
   setPosition(
     gameConfig.predatorInitialPosition.x,
     gameConfig.predatorInitialPosition.y,
-    "predator"
+    APP_CONSTANTS.predator
   );
   cells = document.querySelectorAll(".cell");
 }
@@ -84,7 +87,7 @@ function gameInit() {
     player
 */
 function setPosition(x, y, player) {
-  if (player == "prey") {
+  if (player == APP_CONSTANTS.prey) {
     const el = queryCell(x, y);
     el.classList.add("prey");
     prey = { x, y, el };
@@ -138,7 +141,7 @@ below code is commented for the implementation of better logic
 
 function autoTransition(_x, _y) {
   setTimeout(() => {
-    resetCell(_x, _y, "predator");
+    resetCell(_x, _y, APP_CONSTANTS.predator);
     queryCell(_x, _y).style.backgroundColor = gameConfig.predatorColor;
     if (_y >= ground[_x].length - 1) {
       console.log("reaches end", ground[_x].length, _y);
@@ -152,7 +155,7 @@ function queryCell(x, y) {
 }
 
 function resetCell(x, y, player) {
-  if (player == "predator") {
+  if (player == APP_CONSTANTS.predator) {
     const prevCell = y == predator.length || y == predator.length - 1 ? y : y;
     console.log(`resetting cell ${x},${prevCell} ---> ${predator.length}`);
     queryCell(x, prevCell).style.backgroundColor = gameConfig.resetColor;
@@ -210,7 +213,7 @@ function moveRight() {
 
 function checkForPrey() {
   if (predator[0].el.id == prey.el.id) {
-    prey.el.classList.remove("prey");
+    prey.el.classList.remove(APP_CONSTANTS.prey);
     catchThePrey();
   } else {
     return;
@@ -244,18 +247,18 @@ function that reset once the prey has caught then the new prey position itself t
 */
 
 function goToNextCell_Prey() {
-  setPosition(0, 0, "prey");
+  setPosition(0, 0, APP_CONSTANTS.prey);
 }
 
 function newResetLogic() {
   console.log(predator);
   cells.forEach((c) => {
-    c.classList.remove("predator");
+    c.classList.remove(APP_CONSTANTS.predator);
   });
   predator.forEach((p) => {
     cells.forEach((c) => {
       if (c.id == p.el.id) {
-        c.classList.add("predator");
+        c.classList.add(APP_CONSTANTS.predator);
       }
     });
   });
