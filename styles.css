@@ -1,3 +1,14 @@
+body{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
 #playground{
     display: flex;
     width: 100px;
@@ -21,6 +32,10 @@
 
 }
 
-.predator-style{
+.predator{
     background-color: red;
+}
+
+.prey{
+    background-color: green;
 }

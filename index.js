@@ -16,6 +16,8 @@ const ground = [
 ];
 const totalCol = ground[0].length;
 const totRow = ground.length;
+let cells = undefined;
+
 document.addEventListener("keydown", (e) => {
   onKeyPress(e.key);
 });
@@ -39,6 +41,7 @@ const gameConfig = {
   preyInitialPosition: { x: 3, y: 4 },
   predatorColor: "red",
   preyColor: "green",
+  resetColor: "transparent",
   autoPredatorMovement: false,
 };
 
@@ -73,6 +76,7 @@ function gameInit() {
     gameConfig.predatorInitialPosition.y,
     "predator"
   );
+  cells = document.querySelectorAll(".cell");
 }
 
 /* 
@@ -82,15 +86,14 @@ function gameInit() {
 function setPosition(x, y, player) {
   if (player == "prey") {
     const el = queryCell(x, y);
-    el.style.backgroundColor = gameConfig.preyColor;
+    el.classList.add("prey");
     prey = { x, y, el };
   } else {
     const el = queryCell(x, y);
     predator.push({ x, y, el });
     predator.forEach((c) => {
-      c.el.style.backgroundColor = "red";
+      c.el.classList.add("predator");
     });
-    setMovement();
   }
 }
 
@@ -100,9 +103,17 @@ function handles movement of the predator head
 
 */
 function setMovement() {
-  const { x, y, el } = predator[0];
-  let headCurrentPosition = y;
-
+  /*
+    removing the class predator and adding the class predator 
+    gives the visualization of cell movement
+  */
+  newResetLogic();
+  /*
+below code is commented for the implementation of better logic
+  */
+  //const { x, y, el } = predator[0];
+  //let headCurrentPosition = y;
+  /*
   if (gameConfig.autoPredatorMovement) {
     // logic that enables  auto transition of predator head
     do {
@@ -117,9 +128,10 @@ function setMovement() {
     );
   } else {
     // transition of predator head reactive to keyboard event
-    resetCell(x, y, "predator");
-    queryCell(x, y).style.backgroundColor = "red";
+    //resetCell(x, y, "predator");
+    //queryCell(x, y).style.backgroundColor = gameConfig.predatorColor;
   }
+  */
 }
 
 // function  that handles auto transition
@@ -127,7 +139,7 @@ function setMovement() {
 function autoTransition(_x, _y) {
   setTimeout(() => {
     resetCell(_x, _y, "predator");
-    queryCell(_x, _y).style.backgroundColor = "red";
+    queryCell(_x, _y).style.backgroundColor = gameConfig.predatorColor;
     if (_y >= ground[_x].length - 1) {
       console.log("reaches end", ground[_x].length, _y);
       setMovement();
@@ -141,17 +153,17 @@ function queryCell(x, y) {
 
 function resetCell(x, y, player) {
   if (player == "predator") {
-    const prevCell = y == 1 || y == 0 ? y : y;
-    console.log(`resetting cell ${x},${prevCell}`);
-    queryCell(x, prevCell).style.backgroundColor = "white";
+    const prevCell = y == predator.length || y == predator.length - 1 ? y : y;
+    console.log(`resetting cell ${x},${prevCell} ---> ${predator.length}`);
+    queryCell(x, prevCell).style.backgroundColor = gameConfig.resetColor;
   } else {
-    queryCell(x, y).style.backgroundColor = "white";
+    queryCell(x, y).style.backgroundColor = gameConfig.resetColor;
   }
 }
 
 function paintCell(x, y, i) {
   const newEl = queryCell(x, y);
-  newEl.style.backgroundColor = "red";
+  newEl.style.backgroundColor = gameConfig.predatorColor;
   predator[i] = { x, y, el: newEl };
 }
 
@@ -183,20 +195,29 @@ set the predator array object
 */
 
 function moveRight() {
-  const { x, y, el } = predator[0];
+  predator.map((p) => {
+    p.y = p.y + 1;
+    p.el = queryCell(p.x, p.y);
+  });
+  newResetLogic();
+  checkForPrey();
+  /*
   console.log(y, totalCol);
   if (y < totalCol - 1) {
-    resetCell(x, y, "predator");
-    paintCell(x, y + 1, 0);
+    // resetCell(x, y, "predator");
+    //paintCell(x, y + 1, 0);
     checkForPrey();
   } else if (y == totalCol - 1) {
-    paintCell(x, 0, 0);
+    newResetLogic();
+    // paintCell(x, 0, 0);
     checkForPrey();
   }
+    */
 }
 
 function checkForPrey() {
   if (predator[0].el.id == prey.el.id) {
+    prey.el.classList.remove("prey");
     catchThePrey();
   } else {
     return;
@@ -218,8 +239,8 @@ function catchThePrey() {
     y: prey.y - 1,
     el: queryCell(prey.x, prey.y - 1),
   };
-  console.log(predator);
-  predator.forEach((p, index) => paintCell(p.x, p.y, index));
+  newResetLogic();
+
   goToNextCell_Prey();
 }
 
@@ -231,4 +252,18 @@ function that reset once the prey has caught then the new prey position itself t
 
 function goToNextCell_Prey() {
   setPosition(0, 0, "prey");
+}
+
+function newResetLogic() {
+  console.log(predator);
+  cells.forEach((c) => {
+    c.classList.remove("predator");
+  });
+  predator.forEach((p) => {
+    cells.forEach((c) => {
+      if (c.id == p.el.id) {
+        c.classList.add("predator");
+      }
+    });
+  });
 }
