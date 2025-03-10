@@ -196,23 +196,16 @@ set the predator array object
 
 function moveRight() {
   predator.map((p) => {
-    p.y = p.y + 1;
-    p.el = queryCell(p.x, p.y);
+    if (p.y < totalCol - 1) {
+      p.y = p.y + 1;
+      p.el = queryCell(p.x, p.y);
+    } else {
+      p.y = p.y - (totalCol - 1);
+      p.el = queryCell(p.x, p.y);
+    }
   });
   newResetLogic();
   checkForPrey();
-  /*
-  console.log(y, totalCol);
-  if (y < totalCol - 1) {
-    // resetCell(x, y, "predator");
-    //paintCell(x, y + 1, 0);
-    checkForPrey();
-  } else if (y == totalCol - 1) {
-    newResetLogic();
-    // paintCell(x, 0, 0);
-    checkForPrey();
-  }
-    */
 }
 
 function checkForPrey() {
