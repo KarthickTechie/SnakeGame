@@ -15,6 +15,7 @@ const ground = [
   [21, 22, 23, 24, 25],
 ];
 const totalCol = ground[0].length;
+const totalRow = totalCol;
 const totRow = ground.length;
 let cells = undefined;
 
@@ -38,6 +39,8 @@ Object datastructure to keep all the possible configuratio of the game
 const APP_CONSTANTS = {
   predator: "predator",
   prey: "prey",
+  ArrowUp: "ArrowUp",
+  ArrowRight: "ArrowRight",
 };
 const gameConfig = {
   predatorInitialPosition: { x: 3, y: 0 },
@@ -46,6 +49,7 @@ const gameConfig = {
   preyColor: "green",
   resetColor: "transparent",
   autoPredatorMovement: false,
+  keyPressed: "",
 };
 
 const playground = document.getElementById("playground");
@@ -176,7 +180,10 @@ keypress handler function
 
 function onKeyPress(key) {
   switch (key) {
-    case "ArrowUp":
+    case APP_CONSTANTS.ArrowUp:
+      console.log(key);
+      gameConfig.keyPressed = key;
+      moveUp();
       break;
 
     case "ArrowDown":
@@ -185,8 +192,9 @@ function onKeyPress(key) {
     case "ArrowLeft":
       break;
 
-    case "ArrowRight":
+    case APP_CONSTANTS.ArrowRight:
       console.log(key);
+      gameConfig.keyPressed = key;
       moveRight();
       break;
   }
@@ -194,7 +202,7 @@ function onKeyPress(key) {
 
 /*
 handler function for moving the predator head to Right 
-set the predator array object  
+to make  cursor x,y = 3,0 to move right make y++ so 3,1 will move right to 1 cell
 */
 
 function moveRight() {
@@ -204,6 +212,29 @@ function moveRight() {
       p.el = queryCell(p.x, p.y);
     } else {
       p.y = p.y - (totalCol - 1);
+      p.el = queryCell(p.x, p.y);
+    }
+  });
+  newResetLogic();
+  checkForPrey();
+}
+
+/*
+handler function for moving the predator head to top on arrow up keypress 
+to make  cursor x,y = 3,0 to move right make y++ so 3,1 will move right to 1 cell
+to make cursor x,y = 3,0 to move up make x-- so 2,0 will move up to 1 cell
+
+when moveUp check the x value , it must be x< totalRow-1
+
+*/
+
+function moveUp() {
+  predator.map((p) => {
+    if (p.x > 0) {
+      p.x = p.x - 1;
+      p.el = queryCell(p.x, p.y);
+    } else {
+      p.x = totRow - 1 - p.x;
       p.el = queryCell(p.x, p.y);
     }
   });
@@ -230,11 +261,24 @@ once the prey has caught then the new prey position itself to new cell / random 
 
 function catchThePrey() {
   predator.unshift(prey);
-  predator[predator.length - 1] = {
-    x: prey.x,
-    y: prey.y - 1,
-    el: queryCell(prey.x, prey.y - 1),
-  };
+  switch (gameConfig.keyPressed) {
+    case APP_CONSTANTS.ArrowUp:
+      predator[predator.length - 1] = {
+        x: prey.x + 1,
+        y: prey.y,
+        el: queryCell(prey.x + 1, prey.y),
+      };
+      break;
+
+    case APP_CONSTANTS.ArrowRight:
+      predator[predator.length - 1] = {
+        x: prey.x,
+        y: prey.y - 1,
+        el: queryCell(prey.x, prey.y - 1),
+      };
+      break;
+  }
+
   newResetLogic();
 
   goToNextCell_Prey();
@@ -247,7 +291,11 @@ function that reset once the prey has caught then the new prey position itself t
 */
 
 function goToNextCell_Prey() {
-  setPosition(0, 0, APP_CONSTANTS.prey);
+  let numX = Math.floor(Math.random() * 10);
+  let numY = Math.floor(Math.random() * 10);
+  numX = numX > totRow ? 10 - numX : numX;
+  numY = numY > totalCol ? 10 - numY : numY;
+  setPosition(numX, numY, APP_CONSTANTS.prey);
 }
 
 function newResetLogic() {
