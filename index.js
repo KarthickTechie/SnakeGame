@@ -50,6 +50,18 @@ const gameConfig = {
   resetColor: "transparent",
   autoPredatorMovement: false,
   keyPressed: "",
+  keyPressCountInit: 0,
+};
+
+/*
+object to keep count  of keypress/direction 
+each count will be reset to 0 on another direction keypress event 
+if ArrowUp key pressed directionCounter.up++ 
+if ArrowRight key pressed directionCounter.right++ other props will be reset to 0
+*/
+let directionCounter = {
+  [APP_CONSTANTS.ArrowUp]: 0,
+  [APP_CONSTANTS.ArrowRight]: 0,
 };
 
 const playground = document.getElementById("playground");
@@ -206,13 +218,30 @@ to make  cursor x,y = 3,0 to move right make y++ so 3,1 will move right to 1 cel
 */
 
 function moveRight() {
-  predator.map((p) => {
-    if (p.y < totalCol - 1) {
-      p.y = p.y + 1;
-      p.el = queryCell(p.x, p.y);
+  predator.map((p, index) => {
+    if (index == 0) {
+      if (p.y < totalCol - 1) {
+        p.y = p.y + 1;
+        p.el = queryCell(p.x, p.y);
+      } else {
+        p.y = p.y - (totalCol - 1);
+        p.el = queryCell(p.x, p.y);
+      }
     } else {
-      p.y = p.y - (totalCol - 1);
-      p.el = queryCell(p.x, p.y);
+      if (predator[0].x == p.x) {
+        //  when the body cell also align horizontally
+        // increment y to y+1 only till y < totalCol-1
+        if (p.y < totalCol - 1) {
+          p.y = p.y + 1;
+          p.el = queryCell(p.x, p.y);
+        } else {
+          p.y = totalCol - 1 - p.y;
+          p.el = queryCell(p.x, p.y);
+        }
+      } else {
+        p.x = p.x - 1;
+        p.el = queryCell(p.x, p.y);
+      }
     }
   });
   newResetLogic();
@@ -226,16 +255,42 @@ to make cursor x,y = 3,0 to move up make x-- so 2,0 will move up to 1 cell
 
 when moveUp check the x value , it must be x< totalRow-1
 
+when [n] squares are horizontal , moveup should moveup the head 
+[3,0] -> [3,1] -> [3,2] 
+
+when ArrowUp pressed 
+  
+$ev↑ = [3,1] -> [3,2] -> [2,2] 
+$ev↑ = [3,0] -> [2,1] -> [1,2] 
 */
 
 function moveUp() {
-  predator.map((p) => {
-    if (p.x > 0) {
-      p.x = p.x - 1;
-      p.el = queryCell(p.x, p.y);
+  predator.map((p, index) => {
+    if (index == 0) {
+      // transit of predator head
+      if (p.x > 0) {
+        p.x = p.x - 1;
+        p.el = queryCell(p.x, p.y);
+      } else {
+        p.x = totRow - 1 - p.x;
+        p.el = queryCell(p.x, p.y);
+      }
     } else {
-      p.x = totRow - 1 - p.x;
-      p.el = queryCell(p.x, p.y);
+      // transit of predator body
+      if (predator[0].y == p.y) {
+        // when the body cell also align vertically
+        if (p.x > 0) {
+          // predator body cell reaches the first row
+          p.x = p.x - 1;
+          p.el = queryCell(p.x, p.y);
+        } else {
+          p.x = totRow - 1 - p.x;
+          p.el = queryCell(p.x, p.y);
+        }
+      } else {
+        p.y = p.y + 1;
+        p.el = queryCell(p.x, p.y);
+      }
     }
   });
   newResetLogic();
@@ -260,22 +315,37 @@ once the prey has caught then the new prey position itself to new cell / random 
 */
 
 function catchThePrey() {
-  predator.unshift(prey);
+  const lastCell = predator[predator.length - 1];
+  let _x = 0;
+  let _y = 0;
+  let newLastCell = {};
   switch (gameConfig.keyPressed) {
     case APP_CONSTANTS.ArrowUp:
-      predator[predator.length - 1] = {
-        x: prey.x + 1,
-        y: prey.y,
-        el: queryCell(prey.x + 1, prey.y),
+      _x =
+        lastCell.x == 0 || lastCell.x == predator.length - 1
+          ? 0
+          : lastCell.x - 1;
+      _y = lastCell.y;
+      newLastCell = {
+        x: _x,
+        y: _y,
+        el: queryCell(_x, _y),
       };
+
+      predator = [...predator, newLastCell];
       break;
 
     case APP_CONSTANTS.ArrowRight:
-      predator[predator.length - 1] = {
-        x: prey.x,
-        y: prey.y - 1,
-        el: queryCell(prey.x, prey.y - 1),
+      _x = lastCell.x;
+      _y = lastCell.y == 0 || lastCell.y == 0 ? lastCell.y : lastCell.y - 1;
+      newLastCell = {
+        x: _x,
+        y: _y,
+        el: queryCell(_x, _y),
       };
+
+      predator = [...predator, newLastCell];
+      console.log(predator);
       break;
   }
 
