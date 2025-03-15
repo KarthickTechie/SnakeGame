@@ -105,7 +105,11 @@ function gameInit() {
 function setPosition(x, y, player) {
   if (player == APP_CONSTANTS.prey) {
     const el = queryCell(x, y);
-    el.classList.add("prey");
+    if (el == null) {
+      console.log(`querycell(${x},${y}) returning null`);
+    } else {
+      el.classList.add("prey");
+    }
     prey = { x, y, el };
   } else {
     const el = queryCell(x, y);
@@ -167,7 +171,13 @@ function autoTransition(_x, _y) {
 }
 
 function queryCell(x, y) {
-  return document.getElementById(`cell${ground[x][y]}`);
+  console.log(`queryCell() => ${x} => ${typeof x} ${y} => ${typeof y} `);
+  const el = document.getElementById(`cell${ground[x][y]}`);
+  if (el == null) {
+    console.log(`querycell(${x},${y}) returning null`);
+  } else {
+    return el;
+  }
 }
 
 function resetCell(x, y, player) {
@@ -321,11 +331,9 @@ function catchThePrey() {
   let newLastCell = {};
   switch (gameConfig.keyPressed) {
     case APP_CONSTANTS.ArrowUp:
-      _x =
-        lastCell.x == 0 || lastCell.x == predator.length - 1
-          ? 0
-          : lastCell.x - 1;
+      _x = lastCell.x == totRow - 1 ? 0 : lastCell.x + 1;
       _y = lastCell.y;
+
       newLastCell = {
         x: _x,
         y: _y,
@@ -337,12 +345,23 @@ function catchThePrey() {
 
     case APP_CONSTANTS.ArrowRight:
       _x = lastCell.x;
-      _y = lastCell.y == 0 || lastCell.y == 0 ? lastCell.y : lastCell.y - 1;
-      newLastCell = {
-        x: _x,
-        y: _y,
-        el: queryCell(_x, _y),
-      };
+      _y =
+        lastCell.y == 0 || lastCell.y == totalCol ? lastCell.y : lastCell.y - 1;
+      if (_x == 0 && _y == 0) {
+        // lastcell is [0,0] then no room in the body newcellshould be added to the head
+        _y = predator[0].y + 1;
+        newLastCell = {
+          x: _x,
+          y: _y,
+          el: queryCell(_x, _y),
+        };
+      } else {
+        newLastCell = {
+          x: _x,
+          y: _y,
+          el: queryCell(_x, _y),
+        };
+      }
 
       predator = [...predator, newLastCell];
       console.log(predator);
@@ -363,8 +382,9 @@ function that reset once the prey has caught then the new prey position itself t
 function goToNextCell_Prey() {
   let numX = Math.floor(Math.random() * 10);
   let numY = Math.floor(Math.random() * 10);
-  numX = numX > totRow ? 10 - numX : numX;
-  numY = numY > totalCol ? 10 - numY : numY;
+  numX = numX >= totRow ? 10 - numX - 1 : numX;
+  numY = numY >= totalCol ? 10 - numY - 1 : numY;
+
   setPosition(numX, numY, APP_CONSTANTS.prey);
 }
 
