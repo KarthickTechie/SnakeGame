@@ -8,11 +8,16 @@
 // Matrix data struture to lay the playground
 
 const ground = [
-  [1, 2, 3, 4, 5],
-  [6, 7, 8, 9, 10],
-  [11, 12, 13, 14, 15],
-  [16, 17, 18, 19, 20],
-  [21, 22, 23, 24, 25],
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+  [21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+  [31, 32, 33, 34, 35, 36, 37, 38, 39, 40],
+  [41, 42, 43, 44, 45, 46, 47, 48, 49, 50],
+  [51, 52, 53, 54, 55, 56, 57, 58, 59, 60],
+  [61, 62, 63, 64, 65, 66, 67, 68, 69, 70],
+  [71, 72, 73, 74, 75, 76, 77, 78, 79, 80],
+  [81, 82, 83, 84, 85, 86, 87, 88, 89, 90],
+  [91, 92, 93, 94, 95, 96, 97, 98, 99, 100],
 ];
 const totalCol = ground[0].length;
 const totalRow = totalCol;
@@ -41,6 +46,7 @@ const APP_CONSTANTS = {
   prey: "prey",
   ArrowUp: "ArrowUp",
   ArrowRight: "ArrowRight",
+  gameover: "GAME_OVER",
 };
 const gameConfig = {
   predatorInitialPosition: { x: 3, y: 0 },
@@ -304,7 +310,9 @@ function moveUp() {
     }
   });
   newResetLogic();
-  checkForPrey();
+  if (gameover())
+    document.getElementById("game-over").innerHTML = APP_CONSTANTS.gameover;
+  else checkForPrey();
 }
 
 function checkForPrey() {
@@ -323,7 +331,31 @@ when it reached the prey cell then the predator array grows
 once the prey has caught then the new prey position itself to new cell / random cell
 
 */
+function gameover() {
+  switch (gameConfig.keyPressed) {
+    case APP_CONSTANTS.ArrowUp:
+      if (predator.length == totRow) {
+        let colno = predator[0].y;
+        let tot = 0;
+        predator.reduce((prev, curr) => {
+          tot += curr.y;
+        }, 0);
+        return tot / predator.length == colno;
+      } else return false;
+      break;
+    case APP_CONSTANTS.ArrowRight:
+      if (predator.length == totalCol) {
+        let rowno = predator[0].x;
+        let tot = 0;
+        predator.reduce((prev, curr) => {
+          tot += curr.x;
+        }, 0);
+        return tot / predator.length == rowno;
+      } else return false;
 
+      break;
+  }
+}
 function catchThePrey() {
   const lastCell = predator[predator.length - 1];
   let _x = 0;

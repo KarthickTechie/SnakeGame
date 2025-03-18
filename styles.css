@@ -10,8 +10,10 @@ body{
 }
 
 #playground{
-    display: flex;
-    width: 100px;
+    display: grid;
+    grid-template-columns: repeat(10,1fr);
+    width: auto;
+    height: auto;
     flex-flow: row wrap;
     border: 1px solid black;
     margin: 0 auto;
@@ -38,4 +40,9 @@ body{
 
 .prey{
     background-color: green;
+}
+.gameover{
+    color: red;
+    text-transform: uppercase;
+    letter-spacing: 2;
 }
